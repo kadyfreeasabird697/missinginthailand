@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>没有告诉任何人</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&display=swap">
+<style>
+:root{
+  --bg:#E6EAF0; --panel:#F6F8FB; --ink:#1B2340; --soft:#5A6482; --line:#C5CCDA;
+  --brass:#8F6414; --brass-bg:#F1E3BF; --them:#FFFFFF; --me:#27335E; --me-ink:#F3F5FA; --warn:#9C2F2F;
+  --stage:#C99A3A;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#10152A; --panel:#182040; --ink:#E9ECF5; --soft:#9AA3C0; --line:#2C3660;
+    --brass:#E0B052; --brass-bg:#3A2F14; --them:#232C52; --me:#E0B052; --me-ink:#1A1505; --warn:#F08A8A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10152A; --panel:#182040; --ink:#E9ECF5; --soft:#9AA3C0; --line:#2C3660;
+  --brass:#E0B052; --brass-bg:#3A2F14; --them:#232C52; --me:#E0B052; --me-ink:#1A1505; --warn:#F08A8A;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Noto Serif SC","Songti SC","SimSun",serif;line-height:1.9;font-size:1.0625rem}
+.wrap{max-width:34rem;margin:0 auto;padding:0 1.25rem 6rem}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;background:var(--bg);
+  display:flex;align-items:center;gap:.75rem;padding:.9rem 0 .7rem;border-bottom:1px solid var(--line);
+  font-family:system-ui,"PingFang SC","Microsoft YaHei",sans-serif;font-size:.8125rem;color:var(--soft)}
+.bar i{flex:none;width:2.5rem;height:.3rem;border-radius:1rem;background:var(--stage);transition:background 1.2s}
+.bar span{flex:1}
+.title{padding:22vh 0 2rem}
+.title h1{font-weight:900;font-size:clamp(2.4rem,11vw,3.6rem);line-height:1.25;margin:0 0 1.5rem;letter-spacing:.04em}
+.title p{color:var(--soft);margin:0 0 .9rem;max-width:26em}
+.scene{margin:1.5rem 0 .25rem;border-radius:.6rem;overflow:hidden}
+.scene svg{display:block;width:100%;height:auto}
+.beat{margin:1.15rem 0;animation:in .5s ease both}
+@keyframes in{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.beat{animation:none}}
+.n{margin:1.15rem 0}
+.msg{font-family:system-ui,"PingFang SC","Microsoft YaHei",sans-serif;font-size:.9375rem;line-height:1.6;
+  max-width:80%;padding:.6rem .9rem;border-radius:1.1rem;width:fit-content}
+.in{background:var(--them);border:1px solid var(--line);border-bottom-left-radius:.25rem}
+.out{background:var(--me);color:var(--me-ink);margin-left:auto;border-bottom-right-radius:.25rem}
+.who{font-family:system-ui,sans-serif;font-size:.75rem;color:var(--soft);margin:1.2rem 0 -.8rem .3rem}
+.sys{font-family:system-ui,"PingFang SC",sans-serif;font-size:.8125rem;color:var(--soft);text-align:center}
+.flag{font-family:system-ui,"PingFang SC",sans-serif;font-size:.875rem;line-height:1.6;background:var(--brass-bg);
+  color:var(--ink);border-left:3px solid var(--brass);padding:.6rem .9rem;border-radius:0 .5rem .5rem 0}
+.picked{color:var(--soft);font-size:.9375rem;border-top:1px solid var(--line);padding-top:1rem;margin-top:2rem}
+.choices{display:grid;gap:.6rem;margin:2rem 0 1rem}
+button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:.6rem;
+  padding:.8rem 1rem;text-align:left;cursor:pointer;line-height:1.6;font-size:1rem}
+button:hover{border-color:var(--brass)}
+button:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+button.snd{flex:none;padding:.25rem .7rem;font-size:.8125rem;border-radius:1rem;font-family:inherit;color:var(--soft)}
+button.go{background:var(--ink);color:var(--bg);border-color:var(--ink);width:fit-content;padding:.8rem 1.6rem}
+.end h2{font-weight:900;font-size:1.9rem;margin:3rem 0 .5rem;line-height:1.3}
+.end .kind{color:var(--soft);font-size:.9375rem;margin:0}
+.review{margin-top:3rem;border-top:1px solid var(--line);padding-top:1.5rem;
+  font-family:system-ui,"PingFang SC","Microsoft YaHei",sans-serif;font-size:.9375rem;line-height:1.7}
+.review h3{font-family:"Noto Serif SC",serif;font-size:1.2rem;margin:0 0 .3rem}
+.review ul{list-style:none;padding:0;margin:1rem 0}
+.review li{padding:.55rem 0 .55rem 1.9rem;border-bottom:1px solid var(--line);position:relative}
+.review li::before{content:"○";position:absolute;left:.2rem;color:var(--soft)}
+.review li.hit::before{content:"●";color:var(--brass)}
+.review li small{display:block;color:var(--soft)}
+.help{background:var(--panel);border:1px solid var(--line);border-radius:.6rem;padding:1rem 1.1rem;margin:1.5rem 0}
+.help b{color:var(--warn)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar" id="bar" hidden><i></i><span id="loc"></span><span id="cnt" style="text-align:right;flex:none"></span><button class="snd" id="snd" aria-pressed="true">音乐：开</button></div>
+  <main id="log" aria-live="polite"></main>
+  <div class="choices" id="choices"></div>
+</div>
+<script>
+const FLAGS={
+  video:["始终不肯视频","摄像头坏了、公司不允许、网不好——理由每次不同，结果每次一样。"],
+  photo:["照片另有出处","以图搜图一分钟就能查到。头像越完美，越值得查一次。"],
+  fast:["感情推进得太快","三周，没见过面，没通过视频，已经在说“爱”和“以后”。"],
+  secret:["要求你对所有人保密","“先别告诉别人”听起来像浪漫，作用是让你消失时没人知道去哪找。"],
+  ticket:["替你订好机票、安排好一切","你不掌握行程的任何一环，也就没有任何一环能由你叫停。"],
+  swap:["临时换人来接","说好的人不出现，来的是“司机”“助理”“朋友”。"],
+  route:["目的地变了，车往边境开","从“市区酒店”变成“外府的度假村”。"],
+  passport:["要走你的护照和手机","任何理由都不成立。护照和手机离手，求助的路就断了。"]
+};
+const S={seen:new Set(),told:false};
+const STAGE={sh:["#C99A3A","上海"],chat:["#B9862F","上海，深夜"],bkk:["#3E9C93","曼谷"],road:["#5E6B8A","泰国北部公路"],end:["#7A8096",""]};
+
+const person=(x,y,s,f)=>`<g fill="${f}"><circle cx="${x}" cy="${y}" r="${9*s}"/><path d="M${x-11*s} ${y+12*s}q${11*s} ${-7*s} ${22*s} 0l${3*s} ${52*s}h${-28*s}z"/></g>`;
+const svg=(label,inner)=>`<svg viewBox="0 0 680 300" role="img" aria-label="${label}" font-family="system-ui,'PingFang SC','Microsoft YaHei',sans-serif">${inner}</svg>`;
+const SCENES={
+trumpet:svg("黄昏的排练厅，一个人在吹小号",`
+<defs><linearGradient id="gA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5B5F97"/><stop offset="1" stop-color="#F0B25A"/></linearGradient></defs>
+<rect width="680" height="300" fill="#1E2444"/>
+${[50,205,360,515].map(x=>`<rect x="${x}" y="28" width="115" height="190" fill="url(#gA)"/><path d="M${x+57} 28v190M${x} 120h115" stroke="#1E2444" stroke-width="4"/>`).join("")}
+<rect y="238" width="680" height="62" fill="#12162E"/><path d="M0 238h680" stroke="#39406E" stroke-width="2"/>
+${[90,150,540,600].map(x=>`<path d="M${x} 238v-34h26v34M${x} 204v-30" stroke="#0C1024" stroke-width="5" fill="none"/>`).join("")}
+${person(300,112,1.9,"#0C1024")}<path d="M312 150l42-30 7 9-38 36z" fill="#0C1024"/>
+<g fill="#E8B755"><rect x="318" y="110" width="78" height="6" rx="3"/><path d="M394 113l30-15v30z"/><rect x="345" y="100" width="5" height="12"/><rect x="354" y="100" width="5" height="12"/><rect x="363" y="100" width="5" height="12"/></g>
+<rect x="338" y="116" width="34" height="10" rx="5" fill="none" stroke="#E8B755" stroke-width="3"/>
+<path d="M470 238v-90M452 238l18-14 18 14" stroke="#0C1024" stroke-width="4" fill="none"/><path d="M440 150l60-8 4 34-60 8z" fill="#0C1024"/>`),
+night:svg("深夜的卧室，一个人低头看着发亮的手机",`
+<defs><radialGradient id="gB"><stop offset="0" stop-color="#BFD8FF" stop-opacity=".55"/><stop offset="1" stop-color="#BFD8FF" stop-opacity="0"/></radialGradient></defs>
+<rect width="680" height="300" fill="#0A0E20"/>
+<rect x="390" y="36" width="240" height="160" fill="#18224A"/>
+<g fill="#0A0E20">${[[395,120,28],[428,96,22],[455,130,30],[490,84,20],[515,110,34],[554,126,26],[585,100,40]].map(a=>`<rect x="${a[0]}" y="${a[1]}" width="${a[2]}" height="${196-a[1]}"/>`).join("")}<path d="M472 196V60h4v136z"/><circle cx="474" cy="92" r="9"/><circle cx="474" cy="70" r="5"/></g>
+<g fill="#F3CF7A">${[[402,134],[412,150],[436,108],[462,144],[470,160],[498,96],[524,124],[536,150],[562,140],[596,112],[610,136],[600,160]].map(a=>`<rect x="${a[0]}" y="${a[1]}" width="4" height="4"/>`).join("")}</g>
+<path d="M510 36v160M390 116h240" stroke="#0A0E20" stroke-width="5"/>
+<rect y="232" width="680" height="68" fill="#141936"/><rect x="40" y="214" width="330" height="30" rx="8" fill="#1D2448"/>
+<circle cx="236" cy="200" r="95" fill="url(#gB)"/>
+${person(200,128,2.1,"#05070F")}<path d="M214 170l30 24-6 9-32-18z" fill="#05070F"/>
+<rect x="232" y="184" width="15" height="26" rx="3" fill="#D8E8FF" transform="rotate(-18 240 197)"/>`),
+airport:svg("曼谷机场到达大厅，一个人举着写有“林先生”的接机牌",`
+<rect width="680" height="300" fill="#DCE9EA"/>
+<g fill="none" stroke="#A9C1C4" stroke-width="3">${[0,1,2,3,4,5].map(i=>`<path d="M${-60+i*150} 130q75 -150 150 0"/>`).join("")}</g>
+<rect y="236" width="680" height="64" fill="#C2D2D4"/>
+<rect x="210" y="34" width="260" height="48" rx="4" fill="#F2C230"/>
+<text x="340" y="56" text-anchor="middle" font-size="17" font-weight="700" fill="#1B2340">Arrivals</text>
+<text x="340" y="74" text-anchor="middle" font-size="13" fill="#1B2340">ผู้โดยสารขาเข้า　到达</text>
+${person(520,140,1.3,"#7F9BA0")}${person(560,146,1.3,"#6A888E")}${person(610,138,1.4,"#7F9BA0")}${person(300,142,1.3,"#7F9BA0")}${person(345,150,1.2,"#6A888E")}
+<path d="M250 214h400" stroke="#6A888E" stroke-width="4"/>${[250,350,450,550,650].map(x=>`<path d="M${x} 214v26" stroke="#6A888E" stroke-width="4"/>`).join("")}
+${person(430,112,1.9,"#15181F")}
+<rect x="392" y="150" width="78" height="46" fill="#fff" stroke="#15181F" stroke-width="2"/><text x="431" y="180" text-anchor="middle" font-size="20" font-weight="700" fill="#15181F">林先生</text>
+${person(140,128,2.5,"#27335E")}<rect x="196" y="222" width="46" height="66" rx="6" fill="#B9862F"/><path d="M219 222v-44" stroke="#27335E" stroke-width="5"/>`),
+road:svg("夜间公路，远处有亮灯的加油站，路牌写着 Mae Sot",`
+<defs><linearGradient id="gC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#060814"/><stop offset="1" stop-color="#1B2244"/></linearGradient></defs>
+<rect width="680" height="300" fill="url(#gC)"/>
+<g fill="#E9ECF5">${[[60,30],[140,60],[230,24],[310,50],[420,30],[520,58],[610,26],[650,70]].map(a=>`<circle cx="${a[0]}" cy="${a[1]}" r="1.4"/>`).join("")}</g>
+<path d="M0 150q120 -40 240 -8t220 -14 220 20v20H0z" fill="#0B0F22"/>
+<rect y="150" width="680" height="150" fill="#0F1328"/>
+<path d="M210 300L328 150h24L470 300z" fill="#1C2038"/>
+<path d="M340 160v14M340 190v22M340 232v30M340 280v20" stroke="#E0B052" stroke-width="4"/>
+<path d="M470 126h180v12H470z" fill="#F4F1DC"/><path d="M470 138l-30 80h240l-30-80z" fill="#F6E7A8" opacity=".16"/>
+<path d="M490 138v74M630 138v74" stroke="#C9C6B4" stroke-width="5"/><rect x="530" y="164" width="76" height="48" fill="#232A4E"/><rect x="538" y="172" width="60" height="26" fill="#F6E7A8"/>
+<rect x="508" y="186" width="12" height="26" fill="#C9C6B4"/>
+<path d="M150 218v-64" stroke="#8D93AA" stroke-width="5"/><rect x="84" y="96" width="132" height="60" rx="4" fill="#1F6B4A" stroke="#E9ECF5" stroke-width="2"/>
+<text x="150" y="122" text-anchor="middle" font-size="16" fill="#E9ECF5">แม่สอด</text><text x="150" y="144" text-anchor="middle" font-size="17" font-weight="700" fill="#E9ECF5">Mae Sot</text>`),
+school:svg("早晨的中学教学楼和操场",`
+<rect width="680" height="300" fill="#C4DDEF"/><circle cx="590" cy="60" r="26" fill="#FBE7A6"/>
+<rect x="110" y="84" width="460" height="150" fill="#EDE5D2"/><rect x="100" y="74" width="480" height="14" fill="#9A4B3C"/>
+<g fill="#6E8FB0">${[0,1,2].map(r=>[0,1,2,3,4,5,6,7].filter(c=>!(r==2&&(c==3||c==4))).map(c=>`<rect x="${132+c*54}" y="${102+r*44}" width="34" height="26"/>`).join("")).join("")}</g>
+<rect x="296" y="186" width="88" height="48" fill="#7A3B30"/>
+<path d="M610 234V70" stroke="#8D93AA" stroke-width="4"/><path d="M612 72h44v28h-44z" fill="#C8372D"/>
+<circle cx="60" cy="190" r="34" fill="#5E9B6B"/><path d="M60 234v-40" stroke="#5B4636" stroke-width="6"/>
+<rect y="234" width="680" height="66" fill="#B5553F"/><path d="M0 256h680M0 278h680" stroke="#F3E9DC" stroke-width="2"/>
+${person(230,196,.9,"#27335E")}${person(256,198,.85,"#3E5A8C")}${person(430,196,.9,"#27335E")}${person(470,199,.8,"#3E5A8C")}`),
+case:svg("昏暗的琴房，柜顶放着一只落灰的小号盒",`
+<rect width="680" height="300" fill="#171922"/>
+<path d="M0 0h260L520 300H120z" fill="#FFE6AA" opacity=".07"/>
+<rect y="206" width="680" height="94" fill="#3A2E25"/><path d="M0 206h680" stroke="#5A483A" stroke-width="3"/>
+<path d="M226 206v-44q0-18 18-18h170q40 0 40 34v28z" fill="#0E0F15" stroke="#2A2C3A" stroke-width="2"/>
+<rect x="316" y="132" width="52" height="14" rx="7" fill="none" stroke="#2A2C3A" stroke-width="5"/>
+<rect x="270" y="170" width="12" height="16" fill="#8F6414"/><rect x="400" y="170" width="12" height="16" fill="#8F6414"/>
+<g fill="#FFE6AA" opacity=".35">${[[150,90],[210,130],[260,70],[330,100],[190,180],[380,150],[300,40]].map(a=>`<circle cx="${a[0]}" cy="${a[1]}" r="1.6"/>`).join("")}</g>`)
+};
+const N={
+start:{img:"trumpet",stage:"sh",beats:[
+ ["n","周五傍晚，高中部的排练厅只剩林澈一个人。他把小号拆开，一节一节擦干，放回盒子里。"],
+ ["n","三十三岁。六岁开始学号，拿过的奖状母亲至今压在玻璃板下面。师范大学毕业，在乐团坐过四年二号位，后来到这所中学教音乐。同事喜欢他，学生也喜欢他。"],
+ ["n","母亲发来消息：排骨炖上了，几点到家。"],
+ ["n","还有一条，来自另一个软件。这个软件，母亲不知道，同事不知道，没有人知道。"],
+ ["who","Kevin　曼谷"],["in","今天排练顺利吗？"],["in","我刚下班，一路都在想你吹号是什么样子"]
+ ],choices:[
+  ["回他：挺顺的。我也在想你","warm"],
+  ["回他：聊三周了还没见过你，今晚视频吧","video"]]},
+warm:{stage:"chat",beats:[
+ ["out","挺顺的。我也在想你"],["in","那就好。等见面，你吹给我一个人听"],
+ ["n","他对着屏幕笑了一下，然后收起手机，回家吃饭。"]],next:"night"},
+video:{stage:"chat",flag:"video",beats:[
+ ["out","聊三周了还没见过你，今晚视频吧"],
+ ["in","今晚不行，公司电脑摄像头是封掉的"],["in","手机前摄上周摔坏了，还没去修 😅"],["in","等见面让你看个够，好不好"],
+ ["n","上次的理由是网不好。再上次是和家人住，不方便。"],
+ ["flag","video"]],next:"night"},
+night:{img:"night",stage:"chat",beats:[
+ ["n","夜里十一点，母亲房间的灯灭了。Kevin 发来三张照片：健身房、海边、一桌菜。"],
+ ["in","做给你吃的那天不会太远"],["in","说出来你别笑。我好像爱上你了"],
+ ["n","林澈盯着那行字看了很久。活到三十三岁，这句话他只对人说过，没听人对自己说过。"]],
+ choices:[
+  ["把海边那张存下来，设成壁纸","invite"],
+  ["长按照片，以图搜图","search"]]},
+search:{stage:"chat",flag:"photo",beats:[
+ ["n","搜索结果第一条，是一个新加坡健身博主的主页。同一张海边照，发布于两年前。博主不叫 Kevin。"],
+ ["out","这张照片我在别人主页上看到了"],
+ ["in","？？"],["in","那是我以前的号，后来被盗了，一直有人拿我的图"],["in","你这样查我，我有点难过"],
+ ["flag","photo"],
+ ["n","他忽然觉得理亏。可理亏的明明不该是他。"]],
+ choices:[
+  ["到此为止。删除对话，卸载软件","endA"],
+  ["他解释了。也许是真的","invite"]]},
+invite:{stage:"chat",flag:null,beats:[
+ ["who","Kevin　曼谷"],
+ ["in","下周末来曼谷吧"],["in","机票我已经订好了，周五晚上飞，酒店也安排了，你人来就行"],
+ ["in","先别告诉别人好吗？我想把你藏起来几天，只属于我"],
+ ["n","他本来也没法告诉别人。告诉母亲什么呢？说去见一个男人？"],
+ ["n","这三十三年里，他把这件事藏得太好了。好到此刻，没有一个人可以商量。"]],
+ choices:[
+  ["谁也不说。跟母亲讲学校派他外出交流","go_alone"],
+  ["不用说全部。告诉同事周蔚“去曼谷见个朋友”，把航班和酒店发给她，开着位置共享","go_told"],
+  ["不去了。让他来上海","endA2"]]},
+go_alone:{stage:"chat",beats:[
+ ["n","“交流几天呀？”母亲问。“四五天。”她往他箱子里塞了一袋话梅。"],
+ ["n","他没带小号。盒子留在琴房的柜子顶上。"]],next:"airport"},
+go_told:{stage:"chat",flag:"secret",set:"told",beats:[
+ ["n","周蔚回得很快：“哟，什么朋友？”又补一句：“行，不问。每天给我报个平安，不然我报警啊。”后面跟着一个笑脸。"],
+ ["n","他没有解释是什么朋友。原来不用解释，也可以让一个人知道你在哪。"],
+ ["flag","secret"]],next:"airport"},
+airport:{img:"airport",stage:"bkk",beats:[
+ ["n","素万那普机场，夜里十一点四十。热气从自动门外涌进来。"],
+ ["in","宝贝对不起，客户临时拉我开会走不开"],["in","我让司机阿杰去接你，他举着你名字的牌子"],
+ ["n","到达口，一个穿黑 T 恤的男人举着一张 A4 纸，上面是打印的“林先生”。他不笑，接过箱子就往停车场走。"]],
+ choices:[
+  ["跟上去。来都来了","car"],
+  ["停下。回他：我自己打车去酒店，你忙完来大堂找我","refuse"]]},
+refuse:{stage:"bkk",flag:"swap",beats:[
+ ["out","我自己打车去酒店，你忙完来大堂找我"],
+ ["in","你什么意思？不信我？"],["in","司机都到了你让我怎么跟人交代"],["in","上车。"],
+ ["flag","swap"],
+ ["n","三周以来，Kevin 第一次没有用表情。林澈从那个男人手里拿回箱子的拉杆。对方攥了两秒，松开了。"]],next:"taxi"},
+taxi:{stage:"bkk",beats:[
+ ["n","他自己拦了一辆出租车，把箱子抱在腿上。车开上机场高架，他才发现手一直在抖。"],
+ ["n","后视镜里有一辆白色面包车。他们变道，它也变道。过了两个收费站，它还在。副驾驶上是那件黑 T 恤。"],
+ ["who","Kevin　曼谷"],["in","对不起，刚才是我急了"],["in","你直接去酒店吧，房间开好了，我一小时内到"]],
+ choices:[
+  ["去那家酒店。市中心，大堂里都是人，总不会有事","hotel"],
+  ["让司机掉头回机场。出发层有警察，有航空公司柜台","endB"]]},
+hotel:{stage:"bkk",beats:[
+ ["n","酒店是真的，大堂亮得晃眼。前台查了一下：房间确实订了，登记的却不是 Kevin 这个名字。"],
+ ["n","一个穿衬衫的年轻男人迎上来，中文很流利：“林老师吧？我是 Kevin 的同事。他还堵在路上，让我先陪你坐坐。”"],
+ ["n","他递过来一杯冰的泰式奶茶，吸管已经插好了。"],
+ ["n","旋转门外，那辆白色面包车停在落客区，没有熄火。"]],
+ choices:[
+  ["接过来喝一口。飞了四个多小时，确实渴了","drugged"],
+  ["不接。走到前台，请他们帮忙打旅游警察 1155，然后站在柜台边不走","endF"]]},
+drugged:{stage:"bkk",beats:[
+ ["n","大概十分钟。吊灯开始慢慢地转，沙发像在往下陷。他想站起来，膝盖是空的。"],
+ ["n","黑 T 恤不知什么时候进来了，和那个“同事”一左一右把他架起来，笑着对前台说了句泰语。前台也笑了，点点头。"],
+ ["n","他用上了全部的力气：“救命！我不认识他们！”"],
+ ["n","大堂里的人都看了过来。没有人听得懂。"],
+ ["n","只有一个人听懂了。电梯口一位台湾游客停住脚，看了他两秒。同伴拉了拉他的袖子：“喝醉了啦，不要管。”"],
+ ["n","旋转门越来越近。他还剩一口气的力气。"]],
+ choices:[
+  ["再喊一次：“救命！”","dragged"],
+  ["改喊“Help! Police!”，同时伸手把前台的花瓶扫到地上","endE"]]},
+dragged:{stage:"road",beats:[
+ ["n","“救命”两个字出口，已经含糊得连他自己都听不清。那位游客摇了摇头，走进了电梯。"],
+ ["n","热风扑在脸上，然后是面包车里皮革和烟的味道。车门拉上了。"],
+ ["n","他最后看见的，是旋转门玻璃上自己的倒影，被两个人架着，像个喝醉的游客。"]],next:()=>S.told?"endC2":"endD"},
+run:{stage:"road",beats:[
+ ["n","后门外是一片甘蔗地，没有一盏灯。他跑了不到一百米，被田埂绊倒，膝盖磕在石头上。"],
+ ["n","手电的光从后面扫过来。阿杰喘着气把他拎起来，一句话没说，先收走了手机，然后是护照。"],
+ ["n","便利店的男孩站在后门口看了一会儿，把门关上了。"]],next:()=>S.told?"endC2":"endD"},
+car:{img:"road",stage:"road",beats:[
+ ["n","车开了两个小时还没有停。窗外早就没有高楼，只有路灯，后来路灯也稀了。"],
+ ["n","“不是去市区吗？”"],
+ ["n","“老板在外府的度假村等你。”阿杰从后视镜里看他，“护照给我，我先帮你办入住。”"],
+ ["n","手机很久没有新消息了，他以为是山里信号不好。路牌上的字他不认识，只看懂了下面一行拉丁字母：Mae Sot。"],
+ ["n","前面有个加油站亮着灯。车减速了。"]],
+ choices:[
+  ["把护照递过去","handover"],
+  ["说要上洗手间，进便利店求助","station"]]},
+station:{stage:"road",flag:"route",beats:[
+ ["flag","route"],
+ ["n","他没有进洗手间，直接走到收银台，掏出手机。"],
+ ["n","左上角三个字：无服务。出发前，他忘了开通国际漫游。翻译软件转了几圈，提示需要联网。"],
+ ["n","“Police，”他说，“帮我，报警。”店员是个十几岁的男孩，听得一脸茫然，笑着往后指了指洗手间。"],
+ ["n","他比划打电话的手势。男孩想了想，从货架上拿了一张电话卡递给他。"],
+ ["n","玻璃门外，阿杰下了车。他看见了柜台前的林澈，先是快走，然后跑了起来。"]],
+ choices:[
+  ["从后门跑出去","run"],
+  ["抓起柜台上的笔，在小票背面写 SOS 191，指着门外的人，抱住柜台不松手","endC"]]},
+handover:{stage:"road",beats:[
+ ["n","护照递过去了。过了一会儿，阿杰又伸出手：“手机也给我，前面检查站要收的。”"],
+ ["n","屏幕熄灭前，他才看清左上角一直写着三个字：无服务。他忘了开漫游。这一路，根本没有人能找到他。"]],next:()=>S.told?"endC2":"endD"},
+endA:{img:"school",end:["结局　他留在了上海","你在出发之前停了下来"],beats:[
+ ["n","对话删除了。两天后他忍不住重新下载，想看一眼。那个账号已经不存在。"],
+ ["n","他难受了很久。难受的不是被骗，是那句话原来不是说给他的。"],
+ ["n","周一早上，排练厅。他把号举起来，给高一的学生示范一个长音。"]]},
+endA2:{img:"school",end:["结局　他留在了上海","你在出发之前停了下来"],beats:[
+ ["out","我走不开。你来上海吧，我去机场接你"],
+ ["in","机票钱都花了你跟我说这个？"],["in","你根本没认真过"],
+ ["n","之后再没有消息。一周后，账号消失了。"],
+ ["n","真想见你的人，会愿意换一个你觉得安全的方式见你。"]]},
+endB:{end:["结局　深夜的回程航班","你到了曼谷，但没有跟他们去任何地方"],beats:[
+ ["n","面包车跟到出发层的落客区，停了一会儿，开走了。"],
+ ["n","他在机场警察岗亭对面的椅子上坐到天亮，改签了最早一班回上海的飞机。Kevin 的头像变成了灰色。"],
+ ["n","母亲开门时愣了一下：“交流这么快就结束啦？”"],
+ ["n","“嗯，取消了。”他把那袋话梅原样放回桌上。"]]},
+endF:{end:["结局　前台的电话","你进了那家酒店，但没有碰那杯饮料"],beats:[
+ ["n","“林老师，你误会了。”那个“同事”的笑僵了一下，端着奶茶走到门外去打电话。"],
+ ["n","前台听懂了 1155，拨了出去。二十分钟后旅游警察到的时候，白色面包车已经不在了。"],
+ ["n","那杯奶茶留在茶几上，冰化了一半。没有人回来拿。"],
+ ["n","他坐第二天最早的航班回了上海。Kevin 的账号当晚就消失了。"]]},
+endE:{end:["结局　打碎的花瓶","你被下了药，但让整个大堂都明白了你在求救"],beats:[
+ ["n","花瓶碎在大理石地面上，声音大得所有人都转过头来。Police 这个词，谁都听得懂。"],
+ ["n","前台不笑了。保安从门口走过来。架着他的两只手松开了，那两个人倒退几步，转身出了旋转门。"],
+ ["n","那位台湾游客跑了回来，蹲下扶住他的头，一遍一遍地说：“对不起，对不起，我以为……”"],
+ ["n","他在医院醒来，手背上扎着针。床边坐着一位领事馆的工作人员，问他：需要我们通知你的家人吗？"],
+ ["n","他想了很久，说：我自己跟我妈说。"]]},
+endC:{end:["结局　加油站的灯","你上了车，但在最后一个能求助的地方让人看懂了"],beats:[
+ ["n","191。出发前随手查过一眼的泰国报警电话，他居然还记得。"],
+ ["n","男孩看看小票，又看看门外那个停住脚的男人，不笑了。他拿起了柜台下的座机。"],
+ ["n","阿杰在玻璃门外站了几秒，转身回到车上，开走了。箱子还在后备箱里。"],
+ ["n","警察来的时候天快亮了。做完笔录，一位会中文的志愿者帮他联系了领事馆。"],
+ ["n","他丢了一个箱子。很久以后他才明白，这是这条路上最便宜的价钱。"]]},
+endC2:{end:["结局　有一个人知道","你被带走了，但上海有人知道你去了哪"],beats:[
+ ["n","周蔚等到第二天中午，没有等到那句“平安”。位置共享停在曼谷机场，再也没有动过。电话打不通。"],
+ ["n","她没有再等。报警，打外交部领保热线，把航班号、酒店名、他提过的每一个名字都报了上去。"],
+ ["n","三十多个小时后，林澈在边境一处检查站被拦下带离。这不是必然的结果，很多人没有这样的运气。但运气需要一个起点：有人知道他去了哪。"],
+ ["n","回到上海后，他请周蔚吃了顿饭，说了那个“朋友”是谁。她说：“我知道啊。早知道了。”"]]},
+endD:{img:"case",end:["结局　失联","这一路上，没有任何人知道他在哪"],beats:[
+ ["n","母亲那晚发的消息是：到了吗，那边热不热。"],
+ ["n","学校在第五天报了警。出入境记录显示他去的是泰国，而不是任何一场交流活动。母亲把那条消息又发了几十遍，全都没有送达。"],
+ ["n","同事们印了寻人启事。周蔚翻遍了他的朋友圈，找不到一个知道 Kevin 的人。"],
+ ["n","几个月后，一张照片从边境另一侧的电诈园区流出来。照片里的人瘦得厉害，腰侧有一道缝合过的痕迹，眼睛看着镜头，又像什么都没在看。"],
+ ["n","琴房柜子顶上，小号盒子落了一层灰。没有人去动它。"]]}
+};
+
+/* 背景音乐：用 Web Audio 实时合成，随剧情切换情绪 */
+const TC=[[45,48,52,57],[45,48,53,57],[45,50,53,56],[44,47,52,53]];
+const MOODS={
+ sweet:{bpm:92,ch:[[60,64,67,71],[57,60,64,67],[53,57,60,64],[55,59,62,65]],arp:[0,null,2,3,null,2,1,null],pv:.16,pad:.035,cut:2600},
+ warm:{bpm:76,ch:[[53,57,60,64],[52,55,59,62],[50,53,57,60],[48,52,55,59]],arp:[0,null,null,2,3,null,1,null],pv:.14,pad:.05,cut:2000},
+ doubt:{bpm:80,ch:[[50,53,57,60],[46,50,53,57],[43,46,50,53],[45,49,52,55]],arp:[0,null,2,null,3,null,1,null],pv:.12,pad:.055,cut:1500,beat:[0],bv:.25},
+ uneasy:{bpm:100,ch:[[45,52,57,59],[45,52,57,60],[41,48,57,59],[40,47,57,62]],arp:[0,null,3,2,null,2,3,null],pv:.1,pad:.05,cut:1300,beat:[0,4],bv:.4,drone:33,dv:.05},
+ tense:{bpm:116,ch:TC,arp:[3,null,null,2,null,null,3,null],pv:.09,pad:.05,cut:1000,beat:[0,2,4,6],bv:.6,drone:33,dv:.09,tick:.03},
+ tense2:{bpm:132,ch:TC,arp:[3,3,null,2,3,null,3,2],pv:.09,pad:.05,cut:900,beat:[0,1,4,5],bv:.8,drone:33,dv:.12,tick:.05},
+ dark:{bpm:54,ch:[[38,45,50,53],[38,45,49,53]],arp:[null,null,3,null,null,null,null,null],pv:.1,pad:.04,cut:700,drone:26,dv:.1},
+ calm:{bpm:66,ch:[[48,55,60,64],[53,57,60,65],[48,55,60,64],[55,59,62,67]],arp:[0,null,1,null,2,null,3,null],pv:.13,pad:.045,cut:2200}
+};
+const MUSIC={start:"sweet",warm:"warm",video:"warm",night:"warm",search:"doubt",invite:"doubt",go_alone:"doubt",go_told:"doubt",
+ airport:"uneasy",refuse:"uneasy",taxi:"uneasy",hotel:"tense",drugged:"tense2",dragged:"tense2",car:"tense",station:"tense2",run:"tense2",handover:"tense2",endD:"dark"};
+const A={ctx:null,on:true,want:"sweet",step:0,bar:-1};
+const hz=m=>440*Math.pow(2,(m-69)/12);
+function tone(type,f,t,dur,vol,att,dest){
+  const o=A.ctx.createOscillator(),g=A.ctx.createGain();o.type=type;o.frequency.value=f;
+  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(vol,t+att);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(dest||A.lp);o.start(t);o.stop(t+dur+.05);return o;
+}
+function trumpet(f,t,dur,vol){
+  const c=A.ctx,g=c.createGain(),fl=c.createBiquadFilter(),lfo=c.createOscillator(),lg=c.createGain();
+  fl.type="lowpass";fl.Q.value=2.5;
+  fl.frequency.setValueAtTime(f*1.2,t);fl.frequency.linearRampToValueAtTime(Math.min(f*6,5200),t+.06);
+  fl.frequency.setTargetAtTime(Math.min(f*3.2,3600),t+.06,.12);
+  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(vol,t+.04);
+  g.gain.setTargetAtTime(vol*.8,t+.04,.1);g.gain.setTargetAtTime(.0001,t+Math.max(dur-.1,.05),.04);
+  lfo.frequency.value=5.4;lg.gain.setValueAtTime(0,t);lg.gain.linearRampToValueAtTime(f*.006,t+.45);lfo.connect(lg);
+  [0,4].forEach(d=>{const o=c.createOscillator();o.type="sawtooth";o.frequency.value=f;o.detune.value=d;
+    lg.connect(o.frequency);o.connect(fl);o.start(t);o.stop(t+dur+.3)});
+  fl.connect(g);g.connect(A.lp);lfo.start(t);lfo.stop(t+dur+.3);
+}
+function tick(){
+  const c=A.ctx;
+  if(c.state!=="running")return;
+  if(A.next<c.currentTime)A.next=c.currentTime+.05;
+  while(A.next<c.currentTime+.25){try{
+    const t=A.next,s=A.step%8;
+    if(s===0){A.m=MOODS[A.want];A.bar++;A.lp.frequency.setTargetAtTime(A.m.cut,t,.6)}
+    const m=A.m,spb=30/m.bpm,bar=spb*8,ch=m.ch[A.bar%m.ch.length];
+    if(s===0){
+      ch.forEach(n=>tone("sine",hz(n),t,bar*1.1,m.pad,bar*.4));
+      if(m.drone)tone("sawtooth",hz(m.drone),t,bar*1.05,m.dv,bar*.3);
+    }
+    const a=m.arp[s];
+    if(a!=null){let g=1;while(s+g<8&&m.arp[s+g]==null)g++;trumpet(hz(ch[a]+12),t,g*spb*.94,m.pv*.55)}
+    if(m.beat&&m.beat.includes(s)){const o=tone("sine",90,t,.28,m.bv,.005,A.out);o.frequency.exponentialRampToValueAtTime(38,t+.16)}
+    if(m.tick)tone("square",2100,t,.03,m.tick,.002,A.out);
+    }catch(e){console.error(e)}
+    A.next+=30/A.m.bpm;A.step++;
+  }
+}
+function wake(){if(A.ctx&&A.ctx.state!=="running")A.ctx.resume().catch(()=>{})}
+function audioStart(){
+  if(A.ctx){wake();return}
+  try{
+    const C=window.AudioContext||window.webkitAudioContext;if(!C)return;
+    const c=A.ctx=new C();
+    A.out=c.createGain();A.out.gain.value=A.on?.55:0;A.out.connect(c.destination);
+    A.lp=c.createBiquadFilter();A.lp.type="lowpass";A.lp.frequency.value=2600;A.lp.connect(A.out);
+    const d=c.createDelay(1),fb=c.createGain();d.delayTime.value=.34;fb.gain.value=.28;
+    A.lp.connect(d);d.connect(fb);fb.connect(d);fb.connect(A.out);
+    A.next=c.currentTime+.1;setInterval(tick,60);wake();
+  }catch(e){A.ctx=null}
+}
+document.getElementById("snd").onclick=function(){
+  A.on=!A.on;if(A.on)audioStart();this.textContent="音乐："+(A.on?"开":"关");this.setAttribute("aria-pressed",A.on);
+  if(A.ctx)A.out.gain.setTargetAtTime(A.on?.55:0,A.ctx.currentTime,.05);
+};
+document.addEventListener("visibilitychange",()=>{if(A.ctx)document.hidden?A.ctx.suspend():wake()});
+["pointerdown","keydown","touchend"].forEach(ev=>document.addEventListener(ev,wake,true));
+const log=document.getElementById("log"),box=document.getElementById("choices"),bar=document.getElementById("bar");
+let timer=[];
+function el(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
+function title(){
+  log.innerHTML="";box.innerHTML="";bar.hidden=true;S.seen.clear();S.told=false;A.want="sweet";
+  const t=el("section","title");
+  t.append(el("h1","","没有告诉任何人"),
+    el("p","","一个可以玩的故事。你替一位三十三岁的音乐老师做几个决定，大约五到八分钟走完，有七种结局。"),
+    el("p","","根据近年多起跨境“杀猪盘”案件虚构，人物均为化名。结尾涉及人身伤害的内容。"));
+  log.append(t);
+  const b=el("button","go","开始");b.onclick=()=>{audioStart();log.innerHTML="";bar.hidden=false;play("start")};box.append(b);
+  window.scrollTo(0,0);
+}
+function play(id){
+  const n=N[id];box.innerHTML="";timer.forEach(clearTimeout);timer=[];
+  A.want=MUSIC[id]||"calm";
+  if(n.flag)S.seen.add(n.flag);if(n.set)S[n.set]=true;
+  const st=STAGE[n.end?"end":n.stage];
+  bar.querySelector("i").style.background=st[0];
+  document.getElementById("loc").textContent=n.end?"":st[1];
+  document.getElementById("cnt").textContent=S.seen.size?"已察觉疑点 "+S.seen.size:"";
+  const sec=el("section",n.end?"end":"");
+  if(n.img){const f=el("div","scene");f.innerHTML=SCENES[n.img];sec.append(f)}
+  if(n.end){sec.append(el("h2","",n.end[0]),el("p","kind",n.end[1]))}
+  log.append(sec);
+  const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
+  n.beats.forEach((b,i)=>{
+    const add=()=>{
+      let e;
+      if(b[0]==="n")e=el("p","beat n",b[1]);
+      else if(b[0]==="in"||b[0]==="out")e=el("div","beat msg "+b[0],b[1]);
+      else if(b[0]==="who")e=el("div","beat who",b[1]);
+      else if(b[0]==="flag")e=el("div","beat flag","疑点："+FLAGS[b[1]][0]+"。"+FLAGS[b[1]][1]);
+      sec.append(e);
+      if(i>0)e.scrollIntoView({behavior:reduce?"auto":"smooth",block:"nearest"});
+    };
+    if(reduce||i===0)add();else timer.push(setTimeout(add,i*420));
+  });
+  timer.push(setTimeout(()=>finish(id,sec),reduce?0:n.beats.length*420));
+  if(n.end||id==="start")sec.scrollIntoView({block:"start"});
+}
+function finish(id,sec){
+  const n=N[id];
+  if(n.end)return review(sec);
+  if(n.next){
+    const b=el("button","go","继续");
+    b.onclick=()=>play(typeof n.next==="function"?n.next():n.next);box.append(b);
+  }else n.choices.forEach(c=>{
+    const b=el("button","",c[0]);
+    b.onclick=()=>{log.append(el("p","picked","你选了："+c[0]));play(c[1])};
+    box.append(b);
+  });
+  box.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function review(sec){
+  const r=el("div","review");
+  r.append(el("h3","","这条路上的八个危险信号"),
+    el("div","","实心圆是你这一局停下来察觉到的 "+S.seen.size+" 个。其余的同样出现过，只是故事没有停下来等他。"));
+  const ul=el("ul");
+  Object.keys(FLAGS).forEach(k=>{const li=el("li",S.seen.has(k)?"hit":"",FLAGS[k][0]);li.append(el("small","",FLAGS[k][1]));ul.append(li)});
+  r.append(ul);
+  const h=el("div","help");
+  h.innerHTML="不必说出全部秘密，也可以让一个人知道你的航班、住处和实时位置。<br><br>全国反诈专线 <b>96110</b><br>外交部全球领事保护热线 <b>+86-10-12308</b><br>泰国旅游警察 <b>1155</b>";
+  r.append(h);sec.append(r);
+  const b=el("button","go","再走一遍");b.onclick=title;box.append(b);
+}
+title();
+</script>
+</body>
+</html>
